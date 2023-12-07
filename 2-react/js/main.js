@@ -1,5 +1,15 @@
 import store from "./js/Store.js";
 
+const TabType = {
+  KEYWORD: "KEYWORD",
+  HISTORY: "HISTORY",
+};
+
+const TabLabel = {
+  [TabType.KEYWORD]: "추천 검색어",
+  [TabType.HISTORY]: "최근 검색어",
+};
+
 class App extends React.Component {
   constructor() {
     super();
@@ -8,6 +18,7 @@ class App extends React.Component {
       searchKeyword: "",
       searchResult: [],
       submitted: false,
+      selectedTab: TabType.KEYWORD,
     };
   }
 
@@ -17,11 +28,11 @@ class App extends React.Component {
     const searchKeyword = event.target.value;
 
     // 검색어 삭제 시, 검색결과 리셋 (아래의 this.setState는 동작하지 않음)
-    if (searchKeyword.length <= 0) {
+    if (searchKeyword.length <= 0 && this.state.submitted) {
       return this.handleReset();
     }
 
-    this.setState({ searchKeyword });
+    this.setState({ searchKeyword, submitted: false });
     // setState() : React의 내장메서드 -> 상태의 변화를 감지하고 렌더링함
     // console.log(this.state.searchKeyword)
   }
@@ -44,7 +55,7 @@ class App extends React.Component {
     // setState는 항상 비동기로 동작한다. -> 모든 동기적인 동작이 끝나고 setState가 반영되기 때문에 console.log와 같은 동기적인 동작이 먼저 수행됨. -> console.log에서 변경된 사항을 확인하고 싶으면, 아래와 같은 콜백함수 형태로 작성해야함
     this.setState(
       () => {
-        return { searchKeyword: "" };
+        return { searchKeyword: "", submitted: false };
       },
       () => {
         console.log("handleReset", this.state.searchKeyword);
@@ -102,6 +113,25 @@ class App extends React.Component {
         <div className="empty-box">검색 결과가 없습니다</div>
       );
 
+    const tabs = (
+      <>
+        <ul className="tabs">
+          {Object.values(TabType).map((tabType) => {
+            return (
+              <li
+                className={tabType === this.state.selectedTab ? "active" : ""}
+                key={tabType}
+                onClick={() => this.setState({selectedTab: tabType})}
+              >
+                {TabLabel[tabType]}
+              </li>
+            );
+          })}
+        </ul>
+        {this.state.selectedTab === TabType.KEYWORD && <>TODO: 추천 검색어</>}
+        {this.state.selectedTab === TabType.HISTORY && <>TODO: 최근 검색어</>}
+      </>
+    );
     return (
       <>
         <header>
@@ -109,7 +139,9 @@ class App extends React.Component {
         </header>
         <div className="container">
           {searchForm}
-          <div className="content">{this.state.submitted && searchResult}</div>
+          <div className="content">
+            {this.state.submitted ? searchResult : tabs}{" "}
+          </div>
         </div>
       </>
     );
