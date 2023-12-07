@@ -1,15 +1,119 @@
-const element = (
-  <>
-    <header>
-      <h2 className="container">검색</h2>
-    </header>
-    <div className="container">
-      <form id="search-form-view">
-        <input type="text" placeholder="검색어를 입력하세요" autoFocus />
-        <button type="reset" className="btn-reset"></button>
-      </form>
-    </div>
-  </>
-);
+import store from "./js/Store.js";
 
-ReactDOM.render(element, document.querySelector("#app"));
+class App extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      searchKeyword: "",
+      searchResult: [],
+      submitted: false,
+    };
+  }
+
+  handleChangeInput(event) {
+    //   this.state.searchKeyword = event.target.value;
+    //   this.forceUpdate(); // 강제로, 상태 변화를 감지하고 렌더링하게 하는 메서드 -> 리액트스럽지 못함
+    const searchKeyword = event.target.value;
+
+    // 검색어 삭제 시, 검색결과 리셋 (아래의 this.setState는 동작하지 않음)
+    if (searchKeyword.length <= 0) {
+      return this.handleReset();
+    }
+
+    this.setState({ searchKeyword });
+    // setState() : React의 내장메서드 -> 상태의 변화를 감지하고 렌더링함
+    // console.log(this.state.searchKeyword)
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    // console.log("handleSubmit", this.state.searchKeyword);
+    this.search(this.state.searchKeyword);
+  }
+
+  search(searchKeyword) {
+    const searchResult = store.search(searchKeyword);
+    this.setState({ searchResult, submitted: true });
+    // 변경된 필드만 기존 필드와 병합하는 방식으로 동작함
+  }
+
+  handleReset() {
+    // this.setState({ searchKeyword: "" });
+    // console.log("handleReset", this.state.searchKeyword);
+    // setState는 항상 비동기로 동작한다. -> 모든 동기적인 동작이 끝나고 setState가 반영되기 때문에 console.log와 같은 동기적인 동작이 먼저 수행됨. -> console.log에서 변경된 사항을 확인하고 싶으면, 아래와 같은 콜백함수 형태로 작성해야함
+    this.setState(
+      () => {
+        return { searchKeyword: "" };
+      },
+      () => {
+        console.log("handleReset", this.state.searchKeyword);
+      }
+    );
+  }
+
+  render() {
+    // let resetButton = null;
+
+    // if (this.state.searchKeyword.length > 0) {
+    //   resetButton = <button type="reset" className="btn-reset"></button>;
+    // }
+
+    const searchForm = (
+      <form
+        onSubmit={(event) => this.handleSubmit(event)}
+        onReset={() => this.handleReset()}
+      >
+        <input
+          type="text"
+          placeholder="검색어를 입력하세요"
+          autoFocus
+          value={this.state.searchKeyword}
+          onChange={(event) => this.handleChangeInput(event)}
+        />
+        {/* reset 버튼을 조건부 렌더링하는 방법 */}
+
+        {/* 위의 resetButton, if 문을 사용하는 방법 */}
+        {/* {resetButton} */}
+
+        {/* 삼항연산자를 사용하는 방법 */}
+        {/* {this.state.searchKeyword.length > 0 ? <button type="reset" className="btn-reset"></button> : null} */}
+
+        {/* &&을 사용하는 방법 -> 조건에 맞지 않는 경우 null인 경우에만 사용할 수 있음*/}
+        {this.state.searchKeyword.length > 0 && (
+          <button type="reset" className="btn-reset"></button>
+        )}
+      </form>
+    );
+
+    const searchResult =
+      this.state.searchResult.length > 0 ? (
+        <ul className="result">
+          {this.state.searchResult.map((item) => {
+            return (
+              <li key={item.id}>
+                <img src={item.imageUrl} alt={item.name} />
+                <p>{item.name}</p>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <div className="empty-box">검색 결과가 없습니다</div>
+      );
+
+    return (
+      <>
+        <header>
+          <h2 className="container">검색</h2>
+        </header>
+        <div className="container">
+          {searchForm}
+          <div className="content">{this.state.submitted && searchResult}</div>
+        </div>
+      </>
+    );
+  }
+}
+
+ReactDOM.render(<App />, document.querySelector("#app"));
