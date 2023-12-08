@@ -1,4 +1,5 @@
 import store from "./js/Store.js";
+import { formatRelativeDate } from "./js/helpers.js";
 
 const TabType = {
   KEYWORD: "KEYWORD",
@@ -19,7 +20,15 @@ class App extends React.Component {
       searchResult: [],
       submitted: false,
       selectedTab: TabType.KEYWORD,
+      keywordList: [],
+      historyList: [],
     };
+  }
+
+  componentDidMount() {
+    const keywordList = store.getKeywordList();
+    const historyList = store.getHistoryList();
+    this.setState({ keywordList, historyList });
   }
 
   handleChangeInput(event) {
@@ -45,7 +54,12 @@ class App extends React.Component {
 
   search(searchKeyword) {
     const searchResult = store.search(searchKeyword);
-    this.setState({ searchResult, submitted: true });
+    const historyList = store.getHistoryList();
+
+    this.setState({ searchKeyword, 
+                    searchResult, 
+                    submitted: true, 
+                    historyList });
     // 변경된 필드만 기존 필드와 병합하는 방식으로 동작함
   }
 
@@ -61,6 +75,13 @@ class App extends React.Component {
         console.log("handleReset", this.state.searchKeyword);
       }
     );
+  }
+
+  handleClickRemoveHistory(event, keyword) {
+    event.stopPropagation() // 이벤트 버블링(전파)를 막음 -> 이거 안 막으면 li에 달려있는 이벤트가 버블링되어서 onClick에 달린 핸들러가 동작함
+    store.removeHistory(keyword)
+    const historyList = store.getHistoryList()
+    this.setState({ historyList })
   }
 
   render() {
@@ -113,6 +134,35 @@ class App extends React.Component {
         <div className="empty-box">검색 결과가 없습니다</div>
       );
 
+    const keywordList = (
+      <ul className="list">
+        {this.state.keywordList.map((item, index) => {
+          return (
+            <li key={item.id} onClick={() => this.search(item.keyword)}>
+              <span className="number">{index + 1}</span>
+              <span>{item.keyword}</span>
+            </li>
+          );
+        })}
+      </ul>
+    );
+
+    const historyList = (
+      <ul className="list">
+        {this.state.historyList.map(({ id, keyword, date }) => {
+          return (
+            <li key={id} onClick={() => this.search(keyword)}>
+              <span>{keyword}</span>
+              <span className="date">{formatRelativeDate(date)}</span>
+              <button className="btn-remove" 
+              onClick={(event) => this.handleClickRemoveHistory(event, keyword)}>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    );
+
     const tabs = (
       <>
         <ul className="tabs">
@@ -121,17 +171,18 @@ class App extends React.Component {
               <li
                 className={tabType === this.state.selectedTab ? "active" : ""}
                 key={tabType}
-                onClick={() => this.setState({selectedTab: tabType})}
+                onClick={() => {this.setState({ selectedTab: tabType })}}
               >
                 {TabLabel[tabType]}
               </li>
             );
           })}
         </ul>
-        {this.state.selectedTab === TabType.KEYWORD && <>TODO: 추천 검색어</>}
-        {this.state.selectedTab === TabType.HISTORY && <>TODO: 최근 검색어</>}
+        {this.state.selectedTab === TabType.KEYWORD && keywordList}
+        {this.state.selectedTab === TabType.HISTORY && historyList}
       </>
     );
+
     return (
       <>
         <header>

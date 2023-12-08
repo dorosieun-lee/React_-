@@ -1,3 +1,4 @@
+import { createNextId } from './helpers.js';
 import storage from './storage.js';
 
 
@@ -13,6 +14,8 @@ class Store {
   }
 
   search(keyword) {
+    this.addHistory(keyword);
+    
     return this.storage.productData.filter((product) =>
       product.name.includes(keyword)
     ); // storage에서 상품을 검색하는 로직
@@ -27,7 +30,7 @@ class Store {
   }
 
   _sortHistory(history1, history2) {
-    return history2.date > history1.date;
+    return history2.date - history1.date;
   }
 
   removeHistory(keyword) {
@@ -42,15 +45,18 @@ class Store {
       return;
     }
 
+    // 이미 존재하는 키워드면(hasHistory로 검사) 삭제하고 최신 날짜로 다시 추가하는 로직
     const hasHistory = this.storage.historyData.some(
       (history) => history.keyword === keyword
     );
-    if (hasHistory) this.removeHistory(keyword);
+    if (hasHistory) {this.removeHistory(keyword)};
 
+    const id = createNextId(this.storage.historyData);
     const date = new Date();
-    this.storage.historyData.push({ keyword, date });
+    this.storage.historyData.push({ id, keyword, date });
     this.storage.historyData = this.storage.historyData.sort(this._sortHistory);
   }
+
 }
 
 
