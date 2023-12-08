@@ -19,7 +19,14 @@ class App extends React.Component {
       searchResult: [],
       submitted: false,
       selectedTab: TabType.KEYWORD,
+      keywordList: [],
+      historyList: [],
     };
+  }
+
+  componentDidMount() {
+    const keywordList = store.getKeywordList();
+    this.setState({ keywordList });
   }
 
   handleChangeInput(event) {
@@ -45,7 +52,7 @@ class App extends React.Component {
 
   search(searchKeyword) {
     const searchResult = store.search(searchKeyword);
-    this.setState({ searchResult, submitted: true });
+    this.setState({ searchKeyword, searchResult, submitted: true });
     // 변경된 필드만 기존 필드와 병합하는 방식으로 동작함
   }
 
@@ -61,6 +68,13 @@ class App extends React.Component {
         console.log("handleReset", this.state.searchKeyword);
       }
     );
+  }
+
+  handleTabClick(tabType) {
+    if (tabType == TabType.KEYWORD) {
+      const keywordList = store.getKeywordList();
+      this.setState({ keywordList });
+    }
   }
 
   render() {
@@ -113,6 +127,24 @@ class App extends React.Component {
         <div className="empty-box">검색 결과가 없습니다</div>
       );
 
+    const keywordList = (
+      <ul className="list">
+        {this.state.keywordList.map((item, index) => {
+          return (
+            <li key={item.id} 
+              onClick={() => this.search(item.keyword)}>
+              <span className="number">{index + 1}</span>
+              <span>{item.keyword}</span>
+            </li>
+          );
+        })}
+      </ul>
+    );
+
+    // const historyList = (
+
+    // )
+
     const tabs = (
       <>
         <ul className="tabs">
@@ -121,15 +153,16 @@ class App extends React.Component {
               <li
                 className={tabType === this.state.selectedTab ? "active" : ""}
                 key={tabType}
-                onClick={() => this.setState({selectedTab: tabType})}
+                onClick={() => { this.setState({ selectedTab: tabType })
+                                  handleTabClick(tabType)}}
               >
                 {TabLabel[tabType]}
               </li>
             );
           })}
         </ul>
-        {this.state.selectedTab === TabType.KEYWORD && <>TODO: 추천 검색어</>}
-        {this.state.selectedTab === TabType.HISTORY && <>TODO: 최근 검색어</>}
+        {this.state.selectedTab === TabType.KEYWORD && keywordList}
+        {this.state.selectedTab === TabType.HISTORY && historyList}
       </>
     );
     return (
