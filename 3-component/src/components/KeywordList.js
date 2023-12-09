@@ -2,21 +2,35 @@ import React from "react";
 import List from "./List.js";
 import store from "../Store.js";
 
-export default class KeywordList extends List {
+export default class KeywordList extends React.Component {
+	constructor() {
+		super();
+		this.state = {
+			keywordList: [],
+		};
+	}
+
 	componentDidMount() {
-		const data = store.getKeywordList();
+		const keywordList = store.getKeywordList();
 		this.setState({
-			data,
+			keywordList,
 		});
 	}
 
-    // List 클래스의 render 메서드에서 어떻게 자식 클래스의 renderItem이 호출되는지 의문
-	renderItem(item, index) {
+	render() {
 		return (
-			<>
-				<span className="number">{index + 1}</span>
-				<span>{item.keyword}</span>
-			</>
+			<List
+				data={this.state.keywordList}
+				onClick={this.props.onClick}
+				renderItem={(item, index) => {
+					return (
+						<>
+							<span className="number">{index + 1}</span>
+							<span>{item.keyword}</span>
+						</>
+					);
+				}}
+			/>
 		);
 	}
 }
