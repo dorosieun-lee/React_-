@@ -145,7 +145,7 @@ template {
   display: none;
 }
 :root {
-  --brand-color: #2ac1bc;
+  --brand-color: #28be58;
   --border-color: #ced4da;
   --base-background-color: #eee;
   --danger-color: #bb2d3b;
@@ -179,20 +179,20 @@ code {
   text-decoration: underline;
 }
 .Button.brand {
-  border: 1px solid #2ac1bc;
+  border: 1px solid #28be58;
   border: 1px solid var(--brand-color);
-  color: #2ac1bc;
+  color: #28be58;
   color: var(--brand-color);
 }
 .Button.brand-solid,
 .Button.brand:focus,
 .Button.brand:hover {
-  background-color: #2ac1bc;
+  background-color: #28be58;
   background-color: var(--brand-color);
   color: #fff;
 }
 .Button.brand-solid {
-  border: 1px solid #2ac1bc;
+  border: 1px solid #28be58;
   border: 1px solid var(--brand-color);
 }
 .Button.block {
@@ -222,7 +222,7 @@ code {
   text-decoration: none;
 }
 .Navbar a.active {
-  color: #2ac1bc;
+  color: #28be58;
   color: var(--brand-color);
 }
 .Backdrop {

@@ -1,11 +1,11 @@
-const Navbar = ({ nav1, nav2 }) => {
+const Navbar = () => {
 	return (
 		<nav className="Navbar">
 			<a className="active" href="#">
-				{nav1}
+				메뉴목록
 			</a>
 			<a className="" href="#">
-				{nav2}
+				주문내역
 			</a>
 		</nav>
 	);

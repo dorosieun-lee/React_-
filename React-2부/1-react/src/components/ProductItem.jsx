@@ -11,7 +11,7 @@ const ProductItem = ({ product }) => {
 				<Button
 					styleType="brand"
 					onClick={() => {
-						console.log("주문하기 클릭");
+						console.log(`${name} 클릭`);
 					}}
 				>
 					주문하기
