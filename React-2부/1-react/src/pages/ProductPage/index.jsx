@@ -1,9 +1,8 @@
 import React from "react";
-import ProductApi from "shared/api/ProductApi.js";
-import Button from "../../components/Button.jsx";
+import ProductApi from "../../../../shared/api/ProductApi.js";
+import Navbar from "../../components/Navbar.jsx";
 import ProductItem from "../../components/ProductItem.jsx";
 import Title from "../../components/Title.jsx";
-import Navbar from "../../components/Navbar.jsx";
 import Page from "../../components/Page.jsx";
 
 const fakeProduct = {
@@ -34,6 +33,10 @@ class ProductPage extends React.Component {
 		this.fetch();
 	}
 
+	onClick() {
+		console.log("클릭했습니다.");
+	}
+
 	render() {
 		return (
 			<div className="ProductPage">
@@ -41,7 +44,7 @@ class ProductPage extends React.Component {
 					<ul>
 						{this.state.productList.map((product) => (
 							<li key={product.id}>
-								<ProductItem product={product} />
+								<ProductItem product={product} onClick={this.onClick} />
 							</li>
 						))}
 					</ul>

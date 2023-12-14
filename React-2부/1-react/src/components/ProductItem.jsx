@@ -1,6 +1,6 @@
 import Button from "./Button.jsx";
 
-const ProductItem = ({ product }) => {
+const ProductItem = ({ onClick, product }) => {
 	const { name, price, thumbnail } = product;
 
 	return (
@@ -8,14 +8,11 @@ const ProductItem = ({ product }) => {
 			<div className="description">
 				<h2>{name}</h2>
 				<div>{price}원</div>
-				<Button
-					styleType="brand"
-					onClick={() => {
-						console.log(`${name} 클릭`);
-					}}
-				>
-					주문하기
-				</Button>
+				{onClick && (
+					<Button styleType="brand" onClick={onClick}>
+						주문하기
+					</Button>
+				)}
 			</div>
 			<div className="thumbnail">
 				<img src={thumbnail} alt={`${name} ${price}`} />
