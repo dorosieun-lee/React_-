@@ -1,8 +1,8 @@
-import OrderForm from "../../components/OrderForm.jsx";
+import OrderForm from "./OrderForm.jsx";
 import Page from "../../components/Page.jsx";
-import PaymentButton from "../../components/PaymentButton.jsx";
 import Title from "../../components/Title.jsx";
 import ProductItem from "../../components/ProductItem.jsx";
+import Button from "../../components/Button.jsx";
 
 const fakeProduct = {
 	id: "CACDA421",
@@ -15,12 +15,14 @@ const CartPage = () => {
 	return (
 		<Page
 			header={<Title title="장바구니" backUrl={"/"} />}
-			footer={<PaymentButton />}
+			footer={
+				<Button styleType={"brand-solid"} block form="order-form">
+					결제하기
+				</Button>
+			}
 		>
-			<>
-				<ProductItem product={fakeProduct} />
-				<OrderForm />
-			</>
+			<ProductItem product={fakeProduct} />
+			<OrderForm />
 		</Page>
 	);
 };
